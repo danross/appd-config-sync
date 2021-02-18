@@ -1,14 +1,17 @@
+import logging
 import requests
 import json
 import tempfile, os, shutil
 import configparser
+import io
+
 class Controller: 
     """ Manage the operations on the controller """
 
-    __account = "bosch"
+    __account = ""
     __api_base_url = 'https://' + __account + '.saas.appdynamics.com'
-    __api_client_name = 'config_sync'
-    __api_client_secret = '7a6c419-7444-4a55-4d293664b8f9'
+    __api_client_name = ''
+    __api_client_secret = ''
 
     __token = ''
     __my_repo = None
@@ -17,50 +20,59 @@ class Controller:
     __typ = "" #Should be app, dashboard or global
     __id = -1
     urls = {}
+    __apps = []
+    __logger = None
 
+    def __init__(self, account, client_name, client_secret, logger):
+        self.__logger = logger
+        self.__logger.info("Start initializing Controller object")
+        self.__account = account
+        self.__api_client_name = client_name
+        self.__api_client_secret = client_secret
+        self.__api_base_url = 'https://' + account + '.saas.appdynamics.com'
 
-    def __init__(self):
         self.__token = self.generate_token()
-
+        self.__apps = self.get_applications()
         self.__urls = {"action" : "/controller/actions/[application_id]", 
                        "actiontemplate_email" : "/controller/actiontemplate/email",
                        "actiontemplate_http" : "/controller/actiontemplate/httprequest",
                        "dashboard_export" : "/controller/CustomDashboardImportExportServlet?dashboardId=[dashboard_id]",
                        "dashboard_import" : "/controller/CustomDashboardImportExportServlet",
                        "health_rules" : "/controller/healthrules/[application_id]",
-                       "transaction_detection" : "/controller/transactiondetection/application_id/[scope_name]/rule_type/[entry_point_type]/[rule_name]",
+                       "transaction_detection" : "/controller/transactiondetection/[application_id]/Default%20Scope/custom/",
                        "policies" : "/controller/policies/[application_id]",
                        "applicationanalyticsservice" : "/controller/analyticsdynamicservice/[application_id]"}
 
+        for url in self.__urls: self.__urls[url] = self.__api_base_url + self.__urls[url]
 
-    def generate_token(self):        
+        self.__logger.info("Controller object initialized for account: '" + str(account) + "' on Controller: '" + str(self.__api_base_url) + "'")
+
+    def generate_token(self):
         url = self.__api_base_url + "/controller/api/oauth/access_token"
+        self.__logger.info("Using OAUTH to obtain access_token from URL: '" + str(url) + "'")     
 
         d = {"grant_type" : "client_credentials", 
             "client_id" : self.__api_client_name+"@"+self.__account,
             "client_secret" : self.__api_client_secret}
-
         req = requests.post(url, data=d)
-        print("req = " + str(req))
 
         return req.json()["access_token"]
         
     def get_applications(self):
+        if len(self.__apps) > 0: return self.__apps
         url = self.__api_base_url + "/controller/rest/applications?output=JSON"
         returnValue = self.get(url)
         return returnValue
 
     
-    def post(self, url):
+    def post(self, url, files=None):
         url = url + "?output=JSON"
         print("POST " + str(url))
         headers = {"Authorization" : "Bearer " + self.__token}
-        req = requests.post(url, headers=headers)
-        return req.json()
-
+        req = requests.post(url, headers=headers, files=files)
+        return req
+        
     def get(self, url):
-
-        print("GET " + str(url))
         headers = {"Authorization" : "Bearer " + self.__token}
         req = requests.get(url, headers=headers)
 
@@ -68,20 +80,14 @@ class Controller:
             returnValue = req.json()
         except ValueError:
             returnValue = req.content
-
         return returnValue
 
-
-
+    #This method use a non-official API which has been obtained from the Controller UI
     def export_dashboard(self, id):
-        print("Exporting dashboards")
+        self.__logger.logging.warning("The export_dashboard method uses an non-official API.")
         
-        #This is a non-standard API and may be removed in the future
         url = "/controller/restui/dashboards/getAllDashboardsByType/false"
-        url = self.__api_base_url + url
-
         dashboards = self.get(url)
-
 
         dashboard_url = "/controller/CustomDashboardImportExportServlet?dashboardId=" + str(id)
         dashboard_file_name = str(id) + "_dashboard"
@@ -102,7 +108,37 @@ class Controller:
             filename = "0_" + url.split("/")[-1]
             self.write_to_git_repo(filename, url, form)
 
+    def findApp(self, appname):
+        for app in self.__apps:
+            if app["name"] == appname:
+                return app
+        return {}
 
+    def getTransactionDetectionRules(self, app):
+        url = self.__urls["transaction_detection"]
+        url = url.replace("[application_id]", str(app["id"]))
+
+        data = self.get(url)
+        data = data.decode("utf-8")
+
+        return data
+
+    def postTransactionDetectionRules(self, app, rules):
+        f = {"file" : ("file.csv", rules)}
+        url = self.__urls["transaction_detection"]
+        url = url.replace("[application_id]", str(app["id"]))
+        return self.post(url, files=f)
+
+    def migrateConfig(self, sourceAppName, destAppName):
+        sourceApp = self.findApp(sourceAppName)
+        destApp = self.findApp(destAppName)
+
+        if len(sourceApp) > 0 and len(destApp) > 0:
+            self.__logger.info("Start migration from '" + sourceAppName + "' to '" + destAppName + "'")
+       
+        trx_rules = self.getTransactionDetectionRules(sourceApp)
+        resp = self.postTransactionDetectionRules(destApp, trx_rules)
+        self.__logger.info("Transaction detection rules migrated. HTTP-Responsecode: " + str(resp.status_code) + " - " +str(resp.reason))
 
 
 def main():
@@ -114,11 +150,29 @@ def main():
     client_name = Config.get("CONTROLLER", "api_client_name")
     client_secret = Config.get("CONTROLLER", "api_client_secret")
 
-    ctrl = Controller(account, client_name, client_secret)
+    log_file_name = Config.get("LOGGING", "file_name")
+    log_level = Config.get("LOGGING", "log_level")
+    
+    logger = logging.getLogger("SYNCHER")
+    if log_level == "DEBUG": logger.setLevel(logging.DEBUG)
+    elif log_level == "INFO": logger.setLevel(logging.INFO)
+    else: 
+        print("Logging level not defined - will log to INFO")
+        logger.setLevel(logging.INFO)
 
-    apps = ctrl.get_applications()
-    for app in apps: print(app)
+    fh = logging.FileHandler(log_file_name)
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    fh.setFormatter(formatter)
+    logger.addHandler(fh)
 
+
+    ctrl = Controller(account, client_name, client_secret, logger)
+    account, client_name, client_secret = "","",""
+
+    ctrl.migrateConfig("Config-Sync-testSource", "Config-Sync-testDestination")
+    
+    
+    
     rules = [
         {"period" : "daily", "time" : "3am", "source_app_id" : 315, "dest_app_id" : 500, "object_type" : "transaction_detection"}
     ]
