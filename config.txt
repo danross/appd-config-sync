@@ -1,0 +1,8 @@
+[CONTROLLER]
+account = bosch
+api_client_name = configsync
+api_client_secret = 085d27dd-1eaa-4604-b51a-6af2e3a7f93c
+
+[LOGGING]
+file_name = config_sync.log
+log_level = DEBUG
