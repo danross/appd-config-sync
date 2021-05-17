@@ -23,14 +23,14 @@ class Controller:
     __apps = []
     __logger = None
 
-    def __init__(self, account, client_name, client_secret, logger):
+    def __init__(self, account, client_name, client_secret, logger, controllerURL = ""):
         self.__logger = logger
         self.__logger.info("Start initializing Controller object")
         self.__account = account
         self.__api_client_name = client_name
         self.__api_client_secret = client_secret
-        self.__api_base_url = 'https://' + account + '.saas.appdynamics.com'
-
+        if not(controllerURL == ""): self.__api_base_url = 'https://' + account + '.saas.appdynamics.com'
+        else: self.__api_base_url = controllerURL
         self.__token = self.generate_token()
         self.__apps = self.get_applications()
         self.__urls = {"action" : "/controller/actions/[application_id]", 
@@ -41,7 +41,9 @@ class Controller:
                        "health_rules" : "/controller/healthrules/[application_id]",
                        "transaction_detection" : "/controller/transactiondetection/[application_id]/Default%20Scope/custom/",
                        "policies" : "/controller/policies/[application_id]",
-                       "applicationanalyticsservice" : "/controller/analyticsdynamicservice/[application_id]"}
+                       "applicationanalyticsservice" : "/controller/analyticsdynamicservice/[application_id]"
+                       "get_db_collector" : "/controller/rest/databases/collectors/[configurationId]"
+                       }
 
         for url in self.__urls: self.__urls[url] = self.__api_base_url + self.__urls[url]
 
@@ -122,6 +124,16 @@ class Controller:
         data = data.decode("utf-8")
 
         return data
+
+    def get_db_collector(self, configId):
+        url = self.__urls["get_db_collector"]
+        url = url.replace("[configurationId]", configId)
+
+        data = self.get(url)
+        data = data.decode("utf-8")
+ 
+        return data
+
 
     def postTransactionDetectionRules(self, app, rules):
         f = {"file" : ("file.csv", rules)}
