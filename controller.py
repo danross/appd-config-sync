@@ -71,7 +71,7 @@ class Controller:
             "client_id" : self.__api_client_name+"@"+self.__account,
             "client_secret" : self.__api_client_secret}
                 
-        req = requests.post(url, data=d)
+        req = requests.post(url, data=d, verify=False)
         return req.json()["access_token"]
         
     def ui_login(self):
