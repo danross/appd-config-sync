@@ -33,8 +33,8 @@ class Controller:
         else: self.__api_base_url = controllerURL
         
         if not(ceritficateFilePath == ""): self.__verify = ceritficateFilePath
-
-        print("self.__api_base_url = " + str(self.__api_base_url))
+        self.__logger.info("self.__verify = " + str(self.__verify))
+        self.__logger.info("self.__api_base_url = " + str(self.__api_base_url))
         self.__token = self.generate_token()
         
         self.__user = user
@@ -148,28 +148,28 @@ class Controller:
     
     def post(self, url, data=None, files=None, apiClient=True):
         #url = url + "?output=JSON"
-        print("POST " + str(url))
+        self.__logger.info("POST " + str(url))
         if apiClient:
             headers = {"Authorization" : "Bearer " + self.__token, "Accept" : "application/json;", "Content-type" : "application/json"}
             req = requests.post(url, headers=headers, files=files, data=json.dumps(data), verify=self.__verify)
         else:
             auth = (self.__user+"@"+self.__account, self.__password)
             headers = {"Accept" : "application/json;", "Content-type" : "application/json"}
-            print("auth = " + str(auth))
+            self.__logger.debug("auth = " + str(auth))
             req = requests.post(url, auth=auth, data=json.dumps(data), headers=headers,verify=self.__verify)
             
         return req
 
     def delete(self, url, data=None, files=None, apiClient=True):
         #url = url + "?output=JSON"
-        print("DELETE " + str(url))
+        self.__logger.info("DELETE " + str(url))
         if apiClient:
             headers = {"Authorization" : "Bearer " + self.__token}#, "Accept" : "application/json;", "Content-type" : "application/json"}
             req = requests.delete(url, headers=headers, verify=self.__verify)#, files=files, data=json.dumps(data))
         else:
             auth = (self.__user+"@"+self.__account, self.__password)
             headers = {"Accept" : "application/json;", "Content-type" : "application/json"}
-            print("auth = " + str(auth))
+            self.__logger.debug("auth = " + str(auth))
             req = requests.delete(url, auth=auth, data=json.dumps(data), headers=headers, verify=self.__verify)
             
         return req
@@ -204,7 +204,7 @@ class Controller:
         hrs = self.get_health_rules(9)
         hr_result = []
 
-        print("subgroup = " + str(subgroup))
+        self.__logger.info("subgroup = " + str(subgroup))
         for hr in hrs:
             hr_id = hr["id"]
             full_hr = self.get_health_rule_details(9,hr_id)
@@ -244,31 +244,31 @@ class Controller:
     def create_health_rules(self, app_id,health_rules):
         
         existing_hrs = self.get_health_rule_names(app_id)
-        print("existing_hrs = " + str(existing_hrs))
+        self.__logger.info("existing_hrs = " + str(existing_hrs))
         create_url = self.__urls["health_rules"]
         create_url = create_url.replace("[application_id]", str(app_id))
-        print("create_url = " + str(create_url))
+        self.__logger.info("create_url = " + str(create_url))
         for hr in health_rules:
             (hr_id,hr_name) = self.doesHRExists(hr["name"],existing_hrs)
             del hr["id"]
-            print("hr = " + str(hr))
+            self.__logger.debug("hr = " + str(hr))
             #HR already exists and it not customized
             if not(hr_name == None) and not("custom" in hr_name):
                 delete_url = self.__urls["health_rule"]
                 delete_url = delete_url.replace("[application_id]", str(app_id))
                 delete_url = delete_url.replace("[health-rule-id]", str(hr_id))
                 
-                print("Delete existing HR and recreate it: '" + str(hr_name) + "'")
+                self.__logger.debug("Delete existing HR and recreate it: '" + str(hr_name) + "'")
                 response = self.delete(delete_url)
-                print("response = " + str(response))
+                self.__logger.debug("response = " + str(response))
                 response = self.post(create_url, data=hr)
-                print("response = " + str(response))
+                self.__logger.debug("response = " + str(response))
 
             #HR does not exists
             elif hr_name == None:
-                print("Create new HR as it does not exists in the app")
+                self.__logger.debug("Create new HR as it does not exists in the app")
                 response = self.post(create_url, data=hr)
-                print("response.json() = " + str(response.json()))
+                self.__logger.debug("response.json() = " + str(response.json()))
 
 
     #This method use a non-official API which has been obtained from the Controller UI
@@ -285,7 +285,7 @@ class Controller:
             
 			
     def export_controller_wide_config(self):
-        print("Exporting controller wide configurations")
+        self.__logger.info("Exporting controller wide configurations")
 
         types = {
             "email_action_template" : ["/controller/actiontemplate/email", "json"],        #Email Templates
@@ -321,18 +321,18 @@ class Controller:
 
     def get_all_db_collectors(self):
         url = self.__urls["get_all_collectors"]        
-        print("url = " + str(url))
+        self.__logger.info("url = " + str(url))
 
         data = self.get(url,apiClient=False) 
         return data
 
     def create_db_collector(self, requestData):
         url = self.__urls["create_db_collector"]
-        print("url = " + str(url))
+        self.__logger.info("url = " + str(url))
 
         resp = self.post(url, data=requestData, apiClient=True)
-        print("resp = " + str(resp))
-        print("resp.reason = " + str(resp.reason))
+        self.__logger.info("resp = " + str(resp))
+        self.__logger.info("resp.reason = " + str(resp.reason))
 
 
     def postTransactionDetectionRules(self, app, rules):
