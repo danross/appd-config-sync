@@ -205,6 +205,7 @@ class Controller:
         hr_result = []
 
         self.__logger.info("subgroup = " + str(subgroup))
+        self.__logger.debug("hr = " + str(hr))
         for hr in hrs:
             self.__logger.debug("hr = " + str(hr))
             hr_id = hr["id"]
