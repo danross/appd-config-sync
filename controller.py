@@ -75,9 +75,9 @@ class Controller:
             "client_secret" : self.__api_client_secret}
                 
         req = requests.post(url, data=d, verify=self.__verify)
-        self.__logger.logging.debug("req = " + str(req))
-        self.__logger.logging.debug("req.content = " + str(req.content))
-        self.__logger.logging.debug("req.json() = " + str(req.json()))
+        self.__logger.debug("req = " + str(req))
+        self.__logger.debug("req.content = " + str(req.content))
+        self.__logger.debug("req.json() = " + str(req.json()))
         return req.json()["access_token"]
         
     def ui_login(self):
@@ -92,9 +92,9 @@ class Controller:
 
         resp = s.post(loginUrl, data=formData, headers=headers,verify=self.__verify)
 
-        self.__logger.logging.debug("resp = " + str(resp))
-        self.__logger.logging.debug("resp.headers = " + str(resp.headers))
-        self.__logger.logging.debug("resp.content = " + str(resp.content))
+        self.__logger.debug("resp = " + str(resp))
+        self.__logger.debug("resp.headers = " + str(resp.headers))
+        self.__logger.debug("resp.content = " + str(resp.content))
         self.__uiSession = s
 
     def getServerList(self):
