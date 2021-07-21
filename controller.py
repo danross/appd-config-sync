@@ -206,7 +206,7 @@ class Controller:
 
         self.__logger.info("subgroup = " + str(subgroup))
         for hr in hrs:
-            self.logger.debug("hr = " + str(hr))
+            self.__logger.debug("hr = " + str(hr))
             hr_id = hr["id"]
             full_hr = self.get_health_rule_details(9,hr_id)
             serverSelectionScope = full_hr["affects"]["serverSelectionCriteria"]["affectedServers"]["severSelectionScope"]
