@@ -87,7 +87,7 @@ class Controller:
         headers = {"Accept" : "application/json"}
         s = requests.Session()
 
-        resp = s.post(loginUrl, data=formData, headers=headers)
+        resp = s.post(loginUrl, data=formData, headers=headers,verify=False)
 
         print("resp = " + str(resp))
         print("resp.headers = " + str(resp.headers))
