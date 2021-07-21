@@ -21,8 +21,9 @@ class Controller:
     __apps = None
     __servers = None
     __logger = None
+    __verify = False
 
-    def __init__(self, account, client_name, client_secret, logger, controllerURL = "", user="", password=""):
+    def __init__(self, account, client_name, client_secret, logger, controllerURL = "", user="", password="",ceritficateFilePath="") :
         self.__logger = logger
         self.__logger.info("Start initializing Controller object")
         self.__account = account
@@ -31,6 +32,8 @@ class Controller:
         if controllerURL == "": self.__api_base_url = 'https://' + account + '.saas.appdynamics.com'
         else: self.__api_base_url = controllerURL
         
+        if not(ceritficateFilePath == ""): self.__verify = ceritficateFilePath
+
         print("self.__api_base_url = " + str(self.__api_base_url))
         self.__token = self.generate_token()
         
@@ -71,10 +74,10 @@ class Controller:
             "client_id" : self.__api_client_name+"@"+self.__account,
             "client_secret" : self.__api_client_secret}
                 
-        req = requests.post(url, data=d, verify=False)
-        print("req = " + str(req))
-        print("req.content = " + str(req.content))
-        print("req.json() = " + str(req.json()))
+        req = requests.post(url, data=d, verify=self.__verify)
+        self.__logger.logging.debug("req = " + str(req))
+        self.__logger.logging.debug("req.content = " + str(req.content))
+        self.__logger.logging.debug("req.json() = " + str(req.json()))
         return req.json()["access_token"]
         
     def ui_login(self):
@@ -87,11 +90,11 @@ class Controller:
         headers = {"Accept" : "application/json"}
         s = requests.Session()
 
-        resp = s.post(loginUrl, data=formData, headers=headers,verify=False)
+        resp = s.post(loginUrl, data=formData, headers=headers,verify=self.__verify)
 
-        print("resp = " + str(resp))
-        print("resp.headers = " + str(resp.headers))
-        print("resp.content = " + str(resp.content))
+        self.__logger.logging.debug("resp = " + str(resp))
+        self.__logger.logging.debug("resp.headers = " + str(resp.headers))
+        self.__logger.logging.debug("resp.content = " + str(resp.content))
         self.__uiSession = s
 
     def getServerList(self):
@@ -148,12 +151,12 @@ class Controller:
         print("POST " + str(url))
         if apiClient:
             headers = {"Authorization" : "Bearer " + self.__token, "Accept" : "application/json;", "Content-type" : "application/json"}
-            req = requests.post(url, headers=headers, files=files, data=json.dumps(data), verify=False)
+            req = requests.post(url, headers=headers, files=files, data=json.dumps(data), verify=self.__verify)
         else:
             auth = (self.__user+"@"+self.__account, self.__password)
             headers = {"Accept" : "application/json;", "Content-type" : "application/json"}
             print("auth = " + str(auth))
-            req = requests.post(url, auth=auth, data=json.dumps(data), headers=headers,verify=False)
+            req = requests.post(url, auth=auth, data=json.dumps(data), headers=headers,verify=self.__verify)
             
         return req
 
@@ -162,12 +165,12 @@ class Controller:
         print("DELETE " + str(url))
         if apiClient:
             headers = {"Authorization" : "Bearer " + self.__token}#, "Accept" : "application/json;", "Content-type" : "application/json"}
-            req = requests.delete(url, headers=headers, verify=False)#, files=files, data=json.dumps(data))
+            req = requests.delete(url, headers=headers, verify=self.__verify)#, files=files, data=json.dumps(data))
         else:
             auth = (self.__user+"@"+self.__account, self.__password)
             headers = {"Accept" : "application/json;", "Content-type" : "application/json"}
             print("auth = " + str(auth))
-            req = requests.delete(url, auth=auth, data=json.dumps(data), headers=headers, verify=False)
+            req = requests.delete(url, auth=auth, data=json.dumps(data), headers=headers, verify=self.__verify)
             
         return req
         

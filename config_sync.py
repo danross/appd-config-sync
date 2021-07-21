@@ -42,6 +42,9 @@ def main():
     
     user = Config.get("CONTROLLER", "user")
     password = Config.get("CONTROLLER", "password")
+    ceritficateFilePath = Config.get("CONTROLLER", "ceritficateFilePath")
+
+
     
     
     logger = logging.getLogger("SYNCHER")
@@ -56,7 +59,7 @@ def main():
     fh.setFormatter(formatter)
     logger.addHandler(fh)
 
-    ctrl = Controller(account, client_name, client_secret, logger, user=user, password=password, controllerURL=controllerURL)
+    ctrl = Controller(account, client_name, client_secret, logger, user=user, password=password, controllerURL=controllerURL, ceritficateFilePath=ceritficateFilePath)
     account, client_name, client_secret = "","",""
 
     app_name = ""

@@ -5,6 +5,7 @@ api_client_name = test
 api_client_secret = cc5c3f25-2684-418e-9af4-37fbf148bc44
 user = daniel.ross
 password = dfgdf3242dfsd
+ceritficateFilePath = 
 
 [LOGGING]
 file_name = config_sync.log
