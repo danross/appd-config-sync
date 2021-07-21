@@ -184,8 +184,7 @@ class Controller:
             auth = (self.__user+"@"+self.__account, self.__password)
             #print("auth = " + str(auth))
             req = requests.get(url, auth=auth,verify=self.__verify)
-            
-            
+                        
         #print("get.req = " + str(req))
         
         try:
@@ -205,7 +204,7 @@ class Controller:
         hr_result = []
 
         self.__logger.info("subgroup = " + str(subgroup))
-        self.__logger.debug("hr = " + str(hr))
+        self.__logger.debug("hr = " + str(hrs))
         for hr in hrs:
             self.__logger.debug("hr = " + str(hr))
             hr_id = hr["id"]
