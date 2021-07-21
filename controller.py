@@ -23,7 +23,7 @@ class Controller:
     __logger = None
     __verify = False
 
-    def __init__(self, account, client_name, client_secret, logger, controllerURL = "", user="", password="",ceritficateFilePath="") :
+    def __init__(self, account, client_name, client_secret, logger, controllerURL = "", user="", password="",ceritficateFilePath="",server_application_id=-1) :
         self.__logger = logger
         self.__logger.info("Start initializing Controller object")
         self.__account = account
@@ -33,12 +33,14 @@ class Controller:
         else: self.__api_base_url = controllerURL
         
         if not(ceritficateFilePath == ""): self.__verify = ceritficateFilePath
-        self.__logger.info("self.__verify = " + str(self.__verify))
-        self.__logger.info("self.__api_base_url = " + str(self.__api_base_url))
         self.__token = self.generate_token()
-        
+        self.__server_application_id = server_application_id
         self.__user = user
         self.__password = password
+        
+        self.__logger.info("self.__verify = " + str(self.__verify))
+        self.__logger.info("self.__api_base_url = " + str(self.__api_base_url))
+        self.__logger.info("self.__server_application_id = " + str(self.__server_application_id))
 
         self.__urls = {"action" : "/controller/actions/[application_id]", 
                        "actiontemplate_email" : "/controller/actiontemplate/email",
@@ -200,7 +202,7 @@ class Controller:
         return response
 
     def get_health_rules_by_server_subgroup(self, subgroup):
-        hrs = self.get_health_rules(3)
+        hrs = self.get_health_rules(self.__server_application_id)
         hr_result = []
 
         self.__logger.info("subgroup = " + str(subgroup))
@@ -208,7 +210,7 @@ class Controller:
         for hr in hrs:
             self.__logger.debug("hr = " + str(hr))
             hr_id = hr["id"]
-            full_hr = self.get_health_rule_details(9,hr_id)
+            full_hr = self.get_health_rule_details(self.__server_application_id,hr_id)
             serverSelectionScope = full_hr["affects"]["serverSelectionCriteria"]["affectedServers"]["severSelectionScope"]
 
             if serverSelectionScope == "SERVERS_WITHIN_SUBGROUP":
