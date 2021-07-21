@@ -175,15 +175,15 @@ class Controller:
         return req
         
     def get(self, url, apiClient=True):
-        #print("GET " + str(url))
+        self.__logger.info("GET " + str(url))
         if apiClient:
             headers = {"Authorization" : "Bearer " + self.__token}
             #print("get.headers = " + str(headers))
-            req = requests.get(url, headers=headers)
+            req = requests.get(url, headers=headers,verify=self.__verify)
         else:
             auth = (self.__user+"@"+self.__account, self.__password)
             #print("auth = " + str(auth))
-            req = requests.get(url, auth=auth)
+            req = requests.get(url, auth=auth,verify=self.__verify)
             
             
         #print("get.req = " + str(req))
