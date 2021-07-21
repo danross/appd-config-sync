@@ -200,7 +200,7 @@ class Controller:
         return response
 
     def get_health_rules_by_server_subgroup(self, subgroup):
-        hrs = self.get_health_rules(9)
+        hrs = self.get_health_rules(3)
         hr_result = []
 
         self.__logger.info("subgroup = " + str(subgroup))
