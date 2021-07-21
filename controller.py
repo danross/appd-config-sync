@@ -72,6 +72,9 @@ class Controller:
             "client_secret" : self.__api_client_secret}
                 
         req = requests.post(url, data=d, verify=False)
+        print("req = " + str(req))
+        print("req.content = " + str(req.content))
+        print("req.json() = " + str(req.json()))
         return req.json()["access_token"]
         
     def ui_login(self):
