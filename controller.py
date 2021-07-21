@@ -37,7 +37,7 @@ class Controller:
         self.__server_application_id = server_application_id
         self.__user = user
         self.__password = password
-        
+
         self.__logger.info("self.__verify = " + str(self.__verify))
         self.__logger.info("self.__api_base_url = " + str(self.__api_base_url))
         self.__logger.info("self.__server_application_id = " + str(self.__server_application_id))
@@ -206,7 +206,6 @@ class Controller:
         hr_result = []
 
         self.__logger.info("subgroup = " + str(subgroup))
-        self.__logger.debug("hr = " + str(hrs))
         for hr in hrs:
             self.__logger.debug("hr = " + str(hr))
             hr_id = hr["id"]
@@ -214,6 +213,7 @@ class Controller:
             serverSelectionScope = full_hr["affects"]["serverSelectionCriteria"]["affectedServers"]["severSelectionScope"]
 
             if serverSelectionScope == "SERVERS_WITHIN_SUBGROUP":
+                self.__logger.debug("full_hr = " + str(full_hr))
                 currentSubGroups = serverSelectionScope = full_hr["affects"]["serverSelectionCriteria"]["affectedServers"]["subGroups"]
 
                 contains = False
