@@ -210,10 +210,11 @@ class Controller:
             self.__logger.debug("hr = " + str(hr))
             hr_id = hr["id"]
             full_hr = self.get_health_rule_details(self.__server_application_id,hr_id)
+            self.__logger.debug("full_hr = " + str(full_hr))
             serverSelectionScope = full_hr["affects"]["serverSelectionCriteria"]["affectedServers"]["severSelectionScope"]
 
             if serverSelectionScope == "SERVERS_WITHIN_SUBGROUP":
-                self.__logger.debug("full_hr = " + str(full_hr))
+                
                 currentSubGroups = serverSelectionScope = full_hr["affects"]["serverSelectionCriteria"]["affectedServers"]["subGroups"]
 
                 contains = False
