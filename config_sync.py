@@ -94,8 +94,9 @@ def main():
 
         for hr in hrs:
             print("hr = " + str(hr))
-            hr["affects"]["serverSelectionCriteria"]["affectedServers"]["subGroups"] = [dest_subgroup]
-            hr["name"] = hr["name"].replace("Template",dest_subgroup.rsplit("|", 1)[-1] )
+            if "serverSelectionCriteria" in hr["affects"]:
+                hr["affects"]["serverSelectionCriteria"]["affectedServers"]["subGroups"] = [dest_subgroup]
+                hr["name"] = hr["name"].replace("Template",dest_subgroup.rsplit("|", 1)[-1] )
             
         ctrl.create_health_rules(server_application_id, hrs)
 
