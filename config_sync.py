@@ -93,11 +93,11 @@ def main():
         #SubGroup = "Root|Machine|Path|Here"
 
         for hr in hrs:
-            print("hr = " + str(hr))
+            print("hr before change = " + str(hr))
             if "serverSelectionCriteria" in hr["affects"]:
                 hr["affects"]["serverSelectionCriteria"]["affectedServers"]["subGroups"] = [dest_subgroup]
                 hr["name"] = hr["name"].replace("Template",dest_subgroup.rsplit("|", 1)[-1] )
-            
+            print("hr after change = " + str(hr))
         ctrl.create_health_rules(server_application_id, hrs)
 
         
