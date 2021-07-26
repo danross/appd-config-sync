@@ -247,7 +247,9 @@ class Controller:
         return (None,None)
 
     def create_health_rules(self, app_id,health_rules):
-        
+        print("called create_health_rules")
+        print("app_id = " + str(app_id))
+        print("health_rules = " + str(health_rules))
         existing_hrs = self.get_health_rule_names(app_id)
         self.__logger.info("existing_hrs = " + str(existing_hrs))
         create_url = self.__urls["health_rules"]
@@ -259,6 +261,7 @@ class Controller:
             self.__logger.debug("hr = " + str(hr))
             #HR already exists and it not customized
             if not(hr_name == None) and not("custom" in hr_name):
+                print("hr_name is not empty and does not contain custom i nit")
                 delete_url = self.__urls["health_rule"]
                 delete_url = delete_url.replace("[application_id]", str(app_id))
                 delete_url = delete_url.replace("[health-rule-id]", str(hr_id))
@@ -268,6 +271,8 @@ class Controller:
                 self.__logger.debug("response = " + str(response))
                 response = self.post(create_url, data=hr)
                 self.__logger.debug("response = " + str(response))
+                self.__logger.debug("response.content = " + str(response.content))
+                self.__logger.debug("response.json() = " + str(response.json()))
 
             #HR does not exists
             elif hr_name == None:
