@@ -124,52 +124,5 @@ def main():
 
 
 
-
-
-
-    """
-    f = open('db_collector_structure.json')
-    collector = json.load(f)
-    f.close()
-
-    #collector["customMetrics"] = "select count(*) from table"
-    for key in collector: print("collector["+str(key)+"] = " + str(collector[key]))
-
-    ctrl.create_db_collector(collector)
-    """
-
-    #db_collector = ctrl.get_db_collector(17)
-    
-    #for key in db_collector:
-    #    print("db_collector["+str(key)+"] = " + str(db_collector[key]))
-    
-    #del db_collector["id"]
-
-    #db_collector["name"] = ""
-    
-    #print("Printing collectors with customMetrics not null")
-    #db_collectors = ctrl.get_all_db_collectors()
-    #for collector in db_collectors:
-    #    #print("collector = " + str(collector))
-    #    customMetrics = collector["config"]["customMetrics"]
-    #    if not (customMetrics == None):
-    #        print("customMetrics = " + str(customMetrics))
-#
-#            for key in collector:        
-#                print("collector["+str(key)+"] = " + str(collector[key]))
-    
-    
-    
-    #rules = [
-    #    {"period" : "daily", "time" : "3am", "source_app_id" : 315, "dest_app_id" : 500, "object_type" : "transaction_detection"}
-    #]
-
-    #for rule in rules:
-    #    source_app_id = rule["source_app_id"]
-    #    dest_app_id = rule["dest_app_id"]
-    #    object_type = rule["object_type"]
-         
-
-
 if __name__ == "__main__": main()
 
