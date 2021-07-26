@@ -213,8 +213,7 @@ class Controller:
             self.__logger.debug("full_hr = " + str(full_hr))
             serverSelectionScope = full_hr["affects"]["serverSelectionCriteria"]["affectedServers"]["severSelectionScope"]
 
-            if serverSelectionScope == "SERVERS_WITHIN_SUBGROUP":
-                
+            if serverSelectionScope == "SERVERS_WITHIN_SUBGROUP":                
                 currentSubGroups = serverSelectionScope = full_hr["affects"]["serverSelectionCriteria"]["affectedServers"]["subGroups"]
 
                 contains = False

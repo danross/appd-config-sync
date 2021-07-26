@@ -97,7 +97,7 @@ def main():
             hr["affects"]["serverSelectionCriteria"]["affectedServers"]["subGroups"] = [dest_subgroup]
             hr["name"] = hr["name"].replace("Template",dest_subgroup.rsplit("|", 1)[-1] )
             
-        ctrl.create_health_rules(9, hrs)
+        ctrl.create_health_rules(server_application_id, hrs)
 
         
     if mode == "application":
