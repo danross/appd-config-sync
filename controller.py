@@ -211,17 +211,18 @@ class Controller:
             hr_id = hr["id"]
             full_hr = self.get_health_rule_details(self.__server_application_id,hr_id)
             self.__logger.debug("full_hr = " + str(full_hr))
-            if "serverSelectionCriteria" in full_hr["affects"]:
-                serverSelectionScope = full_hr["affects"]["serverSelectionCriteria"]["affectedServers"]["severSelectionScope"]
+            if "affects" in full_hr:
+                if "serverSelectionCriteria" in full_hr["affects"]:
+                    serverSelectionScope = full_hr["affects"]["serverSelectionCriteria"]["affectedServers"]["severSelectionScope"]
 
-                if serverSelectionScope == "SERVERS_WITHIN_SUBGROUP":                
-                    currentSubGroups = serverSelectionScope = full_hr["affects"]["serverSelectionCriteria"]["affectedServers"]["subGroups"]
+                    if serverSelectionScope == "SERVERS_WITHIN_SUBGROUP":                
+                        currentSubGroups = serverSelectionScope = full_hr["affects"]["serverSelectionCriteria"]["affectedServers"]["subGroups"]
 
-                    contains = False
-                    for currentSubGroup in currentSubGroups: 
-                        if subgroup in currentSubGroup: contains = True
+                        contains = False
+                        for currentSubGroup in currentSubGroups: 
+                            if subgroup in currentSubGroup: contains = True
 
-                    if contains: hr_result.append(full_hr)
+                        if contains: hr_result.append(full_hr)
         return hr_result
 
     def get_health_rule_details(self, app_id, health_rule_id):
