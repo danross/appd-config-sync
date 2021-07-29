@@ -13,7 +13,7 @@ from argparse import ArgumentParser
 
 def replace_ignorecase(text, replace, replaceWith):
     insensitive_hippo = re.compile(re.escape(replace), re.IGNORECASE)
-    insensitive_hippo.sub(replaceWith, text)
+    return insensitive_hippo.sub(replaceWith, text)
 
 def main():
 
