@@ -104,7 +104,7 @@ def main():
                 
                 #hr["name"] = hr["name"].replace("Template",dest_subgroup.rsplit("|", 1)[-1] )
             print("hr after change = " + str(hr))
-        #ctrl.create_health_rules(server_application_id, hrs)
+        ctrl.create_health_rules(server_application_id, hrs)
         
     if mode == "application":
         if not(source_appname == None) and not(source_appid == None):
