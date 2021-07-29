@@ -11,6 +11,9 @@ from controller import Controller
 import re
 from argparse import ArgumentParser
 
+def replace_ignorecase(text, replace, replaceWith):
+    insensitive_hippo = re.compile(re.escape(replace), re.IGNORECASE)
+    insensitive_hippo.sub(replaceWith, text)
 
 def main():
 
@@ -102,11 +105,6 @@ def main():
                 #hr["name"] = hr["name"].replace("Template",dest_subgroup.rsplit("|", 1)[-1] )
             print("hr after change = " + str(hr))
         #ctrl.create_health_rules(server_application_id, hrs)
-
-    def replace_ignorecase(text, replace, replaceWith):
-        insensitive_hippo = re.compile(re.escape(replace), re.IGNORECASE)
-        insensitive_hippo.sub(replaceWith, text)
-
         
     if mode == "application":
         if not(source_appname == None) and not(source_appid == None):
