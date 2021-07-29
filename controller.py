@@ -261,7 +261,7 @@ class Controller:
             self.__logger.debug("hr = " + str(hr))
             #HR already exists and it not customized
             if not(hr_name == None) and not("custom" in hr_name):
-                print("hr_name is not empty and does not contain custom i nit")
+                print("hr_name is not empty and does not contain custom in it")
                 delete_url = self.__urls["health_rule"]
                 delete_url = delete_url.replace("[application_id]", str(app_id))
                 delete_url = delete_url.replace("[health-rule-id]", str(hr_id))

@@ -8,6 +8,7 @@ import io
 import json
 import sys
 from controller import Controller
+import re
 from argparse import ArgumentParser
 
 
@@ -96,9 +97,15 @@ def main():
             print("hr before change = " + str(hr))
             if "serverSelectionCriteria" in hr["affects"]:
                 hr["affects"]["serverSelectionCriteria"]["affectedServers"]["subGroups"] = [dest_subgroup]
-                hr["name"] = hr["name"].replace("Template",dest_subgroup.rsplit("|", 1)[-1] )
+                hr["name"] = replace_ignorecase(hr["name"], "template", dest_subgroup.rsplit("|", 1)[-1])
+                
+                #hr["name"] = hr["name"].replace("Template",dest_subgroup.rsplit("|", 1)[-1] )
             print("hr after change = " + str(hr))
-        ctrl.create_health_rules(server_application_id, hrs)
+        #ctrl.create_health_rules(server_application_id, hrs)
+
+    def replace_ignorecase(text, replace, replaceWith):
+        insensitive_hippo = re.compile(re.escape(replace), re.IGNORECASE)
+        insensitive_hippo.sub(replaceWith, text)
 
         
     if mode == "application":
