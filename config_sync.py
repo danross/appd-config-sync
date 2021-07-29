@@ -99,7 +99,7 @@ def main():
         for hr in hrs:
             print("hr before change = " + str(hr))
             if "serverSelectionCriteria" in hr["affects"]:
-                hr["affects"]["serverSelectionCriteria"]["affectedServers"]["subGroups"] = [dest_subgroup]
+                hr["affects"]["serverSelectionCriteria"]["affectedServers"]["subGroups"] = ["Root|"+dest_subgroup]
                 hr["name"] = replace_ignorecase(hr["name"], "template", dest_subgroup.rsplit("|", 1)[-1])
                 
                 #hr["name"] = hr["name"].replace("Template",dest_subgroup.rsplit("|", 1)[-1] )
