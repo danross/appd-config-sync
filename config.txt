@@ -1,12 +1,14 @@
 [CONTROLLER]
-controllerURL = https://rb-appdynamics-itm.fe.de.bosch.com:443
+controllerURL = 
+controllerURL_ITM = https://rb-appdynamics-itm.fe.de.bosch.com:443
 account = bosch
 api_client_name = test
-api_client_secret = cc5c3f25-2684-418e-9af4-37fbf148bc44
+api_client_secret = 5dc03298-7ede-4fb8-a13a-c04f90a289ab
 user = daniel.ross
-password = dfgdf3242dfsd
+password = fgdf2392fjgsdfk
 ceritficateFilePath = 
 server_application_id = 9
+database_application_id = 7
 
 [LOGGING]
 file_name = config_sync.log

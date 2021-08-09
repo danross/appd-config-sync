@@ -10,6 +10,7 @@ import sys
 from controller import Controller
 import re
 from argparse import ArgumentParser
+from OpsTool import ITMOpsTool
 
 def replace_ignorecase(text, replace, replaceWith):
     insensitive_hippo = re.compile(re.escape(replace), re.IGNORECASE)
@@ -30,6 +31,11 @@ def main():
     parser.add_argument("-ssg","--SourceSubGroup", dest="source_subgroup", help="Select Source Subggroup", metavar="source_subgroup")
     parser.add_argument("-dsg","--DestSubGroup", dest="dest_subgroup", help="Select Dest Subggroup", metavar="dest_subgroup")
 
+    #database
+    parser.add_argument("-l","--Line", dest="line", help="Select a line like PS|BAP|HDEV6-SL0", metavar="line")
+
+
+
     args = parser.parse_args()
 
     
@@ -49,6 +55,7 @@ def main():
     ceritficateFilePath = Config.get("CONTROLLER", "ceritficateFilePath")
 
     server_application_id = Config.get("CONTROLLER","server_application_id")
+    database_application_id = Config.get("CONTROLLER","database_application_id")
     
     
     logger = logging.getLogger("SYNCHER")
@@ -63,7 +70,7 @@ def main():
     fh.setFormatter(formatter)
     logger.addHandler(fh)
 
-    ctrl = Controller(account, client_name, client_secret, logger, user=user, password=password, controllerURL=controllerURL, ceritficateFilePath=ceritficateFilePath,server_application_id=server_application_id)
+    ctrl = Controller(account, client_name, client_secret, logger, user=user, password=password, controllerURL=controllerURL, ceritficateFilePath=ceritficateFilePath,server_application_id=server_application_id, database_application_id=database_application_id)
     account, client_name, client_secret = "","",""
 
     app_name = ""
@@ -74,15 +81,36 @@ def main():
         print("'"+str(arg) + "' = '" + str(value)+"'")
         if arg == "mode": mode = value
 
+        if arg == "source_subgroup": source_subgroup = value
+        if arg == "dest_subgroup": dest_subgroup = value
+
         if arg == "source_appname": source_appname = value
         if arg == "source_appid": source_appid = value
         if arg == "target_appname": target_appname = value
         if arg == "target_appid": target_appid = value
-
-        if arg == "source_subgroup": source_subgroup = value
-        if arg == "dest_subgroup": dest_subgroup = value
         
+        if arg == "line" : line = value
+
+    if mode == "database":
+
+        line = line.split("|")
+        opstool = ITMOpsTool("user","pwd")
+
+        db = opstool.getDatabaseByLine(line)
+        print("db = " + str(db))
+            
+        oltp_db = db["oltp_db"]
+        olap_db = db["olap_db"]
+        print("oltp_db = " + str(oltp_db))
+        print("olap_db = " + str(olap_db))
+        
+        hrs = ctrl.get_health_rules_by_reference_database(database_application_id)
+
+
+        
+
     if mode == "machine":
+
         ctrl.ui_login()
         
         if not ctrl.doesSubGroupExist(source_subgroup):
@@ -100,13 +128,16 @@ def main():
             print("hr before change = " + str(hr))
             if "serverSelectionCriteria" in hr["affects"]:
                 hr["affects"]["serverSelectionCriteria"]["affectedServers"]["subGroups"] = ["Root|"+dest_subgroup]
+
+                dest_subgroups_segments = dest_subgroup.rsplit("|")
+
                 hr["name"] = replace_ignorecase(hr["name"], "template", dest_subgroup.rsplit("|", 1)[-1])
                 
-                #hr["name"] = hr["name"].replace("Template",dest_subgroup.rsplit("|", 1)[-1] )
             print("hr after change = " + str(hr))
         ctrl.create_health_rules(server_application_id, hrs)
         
     if mode == "application":
+
         if not(source_appname == None) and not(source_appid == None):
             print("Do not provide source_appname and source_appid! Abort")
             sys.exit(-1)

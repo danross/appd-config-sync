@@ -23,7 +23,7 @@ class Controller:
     __logger = None
     __verify = False
 
-    def __init__(self, account, client_name, client_secret, logger, controllerURL = "", user="", password="",ceritficateFilePath="",server_application_id=-1) :
+    def __init__(self, account, client_name, client_secret, logger, controllerURL = "", user="", password="",ceritficateFilePath="",server_application_id=-1,database_application_id=-1) :
         self.__logger = logger
         self.__logger.info("Start initializing Controller object")
         self.__account = account
@@ -35,6 +35,7 @@ class Controller:
         if not(ceritficateFilePath == ""): self.__verify = ceritficateFilePath
         self.__token = self.generate_token()
         self.__server_application_id = server_application_id
+        self.__database_application_id = database_application_id
         self.__user = user
         self.__password = password
 
@@ -200,6 +201,34 @@ class Controller:
         url = url.replace("[application_id]", str(app_id))
         response = self.get(url)
         return response
+
+    def get_health_rules_by_reference_database(self, databaseName):
+        hrs = self.get_health_rules(self.__database_application_id)
+        hr_result = []
+
+        self.__logger.info("databaseName = " + str(databaseName))
+        for hr in hrs:
+            self.__logger.debug("hr = " + str(hr))
+            hr_id = hr["id"]
+            full_hr = self.get_health_rule_details(self.__server_application_id,hr_id)
+            self.__logger.debug("full_hr = " + str(full_hr))
+            
+            #if "affects" in full_hr:
+            #    if "serverSelectionCriteria" in full_hr["affects"]:
+            #        serverSelectionScope = full_hr["affects"]["serverSelectionCriteria"]["affectedServers"]["severSelectionScope"]
+#
+#                    if serverSelectionScope == "SERVERS_WITHIN_SUBGROUP":                
+#                        currentSubGroups = serverSelectionScope = full_hr["affects"]["serverSelectionCriteria"]["affectedServers"]["subGroups"]
+#
+#                        contains = False
+#                        for currentSubGroup in currentSubGroups: 
+#                            if subgroup in currentSubGroup: contains = True
+#
+#                        if contains: hr_result.append(full_hr)
+        return hr_result
+
+
+
 
     def get_health_rules_by_server_subgroup(self, subgroup):
         hrs = self.get_health_rules(self.__server_application_id)
