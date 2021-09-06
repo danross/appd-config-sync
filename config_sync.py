@@ -120,7 +120,7 @@ def main():
         #hrs = ctrl.get_health_rules_by_server_subgroup(source_subgroup)
         #SubGroup = "Root|Machine|Path|Here"
 
-        hrs = ctrl.get_health_rules(server_application_id)
+        hrs = ctrl.get_health_rules_with_details(server_application_id)
 
         for hr in hrs:
             hr_name = hr["name"]
