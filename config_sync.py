@@ -131,20 +131,16 @@ def main():
                     hr["affects"]["serverSelectionCriteria"]["affectedServers"]["subGroups"] = ["Root|"+dest_subgroup]
 
                     dest_subgroups_segments = dest_subgroup.split("|")
-
                     suffix = dest_subgroups_segments[-2] + "-" + dest_subgroups_segments[-1]
                     prefix = ""
 
                     for i in range(len(dest_subgroups_segments)-2): prefix = prefix + dest_subgroups_segments[i] + "-"
                     prefix = prefix[:-1]
 
-
                     hr["name"] = replace_ignorecase(hr["name"], "template", suffix)
                     hr["name"] = prefix + hr["name"]
-
                     
                 print("hr after change = " + str(hr))
-
 
 
 

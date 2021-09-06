@@ -206,9 +206,11 @@ class Controller:
         hrs = self.get_health_rules(self.__database_application_id)
         hrs_with_details = []
         for hr in hrs:
+            hr_id = hr["id"]
             full_hr = self.get_health_rule_details(app_id,hr_id)
             hrs_with_details.append(full_hr)
         return hrs_with_details
+
 
     def get_health_rules_by_reference_database(self, databaseName):
         hrs = self.get_health_rules(self.__database_application_id)
