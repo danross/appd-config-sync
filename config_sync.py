@@ -92,7 +92,6 @@ def main():
         if arg == "line" : line = value
 
     if mode == "database":
-
         line = line.split("|")
         opstool = ITMOpsTool("user","pwd")
 
@@ -107,10 +106,7 @@ def main():
         hrs = ctrl.get_health_rules_by_reference_database(database_application_id)
 
 
-        
-
     if mode == "machine":
-
         ctrl.ui_login()
         
         if not ctrl.doesSubGroupExist(source_subgroup):
@@ -125,15 +121,31 @@ def main():
         #SubGroup = "Root|Machine|Path|Here"
 
         for hr in hrs:
-            print("hr before change = " + str(hr))
-            if "serverSelectionCriteria" in hr["affects"]:
-                hr["affects"]["serverSelectionCriteria"]["affectedServers"]["subGroups"] = ["Root|"+dest_subgroup]
+            hr_name = hr["name"]
 
-                dest_subgroups_segments = dest_subgroup.rsplit("|")
+            if hr_name.endswith("TEMPLATE"):
+                print("hr before change = " + str(hr))
+                if "serverSelectionCriteria" in hr["affects"]:
+                    hr["affects"]["serverSelectionCriteria"]["affectedServers"]["subGroups"] = ["Root|"+dest_subgroup]
 
-                hr["name"] = replace_ignorecase(hr["name"], "template", dest_subgroup.rsplit("|", 1)[-1])
-                
-            print("hr after change = " + str(hr))
+                    dest_subgroups_segments = dest_subgroup.split("|")
+
+                    suffix = dest_subgroups_segments[-2] + "-" + dest_subgroups_segments[-1]
+                    prefix = ""
+
+                    for i in range(len(dest_subgroups_segments)-2): prefix = prefix + dest_subgroups_segments[i] + "-"
+                    prefix = prefix[:-1]
+
+
+                    hr["name"] = replace_ignorecase(hr["name"], "template", suffix)
+
+
+                    
+                print("hr after change = " + str(hr))
+
+
+
+
         ctrl.create_health_rules(server_application_id, hrs)
         
     if mode == "application":
