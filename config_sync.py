@@ -81,7 +81,7 @@ def main():
         print("'"+str(arg) + "' = '" + str(value)+"'")
         if arg == "mode": mode = value
 
-        if arg == "source_subgroup": source_subgroup = value
+        #if arg == "source_subgroup": source_subgroup = value
         if arg == "dest_subgroup": dest_subgroup = value
 
         if arg == "source_appname": source_appname = value
@@ -109,21 +109,23 @@ def main():
     if mode == "machine":
         ctrl.ui_login()
         
-        if not ctrl.doesSubGroupExist(source_subgroup):
-            print("source_subgroup '" + str(source_subgroup) + "' does not exist! Exit")
-            sys.exit(-1)
+        #if not ctrl.doesSubGroupExist(source_subgroup):
+        #    print("source_subgroup '" + str(source_subgroup) + "' does not exist! Exit")
+        #    sys.exit(-1)
 
         if not ctrl.doesSubGroupExist(dest_subgroup):
             print("dest_subgroup '" + str(dest_subgroup) + "' does not exist! Exit")
             sys.exit(-1)
 
-        hrs = ctrl.get_health_rules_by_server_subgroup(source_subgroup)
+        #hrs = ctrl.get_health_rules_by_server_subgroup(source_subgroup)
         #SubGroup = "Root|Machine|Path|Here"
+
+        hrs = ctrl.get_health_rules(server_application_id)
 
         for hr in hrs:
             hr_name = hr["name"]
 
-            if hr_name.endswith("TEMPLATE"):
+            if hr_name.lower().endswith("template"):
                 print("hr before change = " + str(hr))
                 if "serverSelectionCriteria" in hr["affects"]:
                     hr["affects"]["serverSelectionCriteria"]["affectedServers"]["subGroups"] = ["Root|"+dest_subgroup]
