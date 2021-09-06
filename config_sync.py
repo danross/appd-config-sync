@@ -138,7 +138,7 @@ def main():
 
 
                     hr["name"] = replace_ignorecase(hr["name"], "template", suffix)
-
+                    hr["name"] = prefix + hr["name"]
 
                     
                 print("hr after change = " + str(hr))
